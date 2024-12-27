@@ -1,4 +1,5 @@
 import string
+import sys
 
 
 def _char_freq(input: str) -> int:

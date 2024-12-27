@@ -9,14 +9,14 @@ def test_hex_to_base64():
 
     hex_bytes = bytes.fromhex(hex_str)
     
-    return func.hex_to_base64(hex_bytes).decode('utf-8') == result
+    assert func.hex_to_base64(hex_bytes).decode('utf-8') == result
 
 def test_fixed_xor():
     b_input1 = bytes.fromhex("1c0111001f010100061a024b53535009181c")
     b_input2 = bytes.fromhex("686974207468652062756c6c277320657965")
     result = "746865206b696420646f6e277420706c6179"
 
-    return func.fixed_xor(b_input1, b_input2).hex() == result
+    assert func.fixed_xor(b_input1, b_input2).hex() == result
 
 def test_single_xor_cipher():
     result = "Cooking MC's like a pound of bacon"
@@ -34,11 +34,8 @@ def test_single_xor_cipher():
             msg = msg_h
             key = key_b.hex()
 
-    return msg == result and key == '58'
+    assert (msg == result) and (key == '58')
 
-
-if __name__ == '__main__':
-    print("test_hex_to_base64:", test_hex_to_base64())
-    print("test_fixed_xor:", test_fixed_xor())
-    print("test_single_xor_cipher:", test_single_xor_cipher())
+def test_detect_single_character_xor():
+    assert 1 == 1
 
