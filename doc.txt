@@ -1,0 +1,5 @@
+STEPS:
+    1. decode to bytes
+    2. do stuff
+    3. encode to str (hex or base64)
+    4. check
