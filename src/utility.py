@@ -5,6 +5,11 @@ def _char_freq(input: str) -> int:
     '''
     Determines the frequency of valid plaintext characters
     '''
-    char_s = set(string.printable)
-    return sum(1 for char in input if char in char_s)
+    english_freq = "etaoinshrdlcumwfgypbvkjxqz "
+    
+    score = 0
+    for char in input.lower():
+        if char in english_freq:
+            score += 1
+    return score
 

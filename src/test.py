@@ -9,25 +9,36 @@ def test_hex_to_base64():
 
     hex_bytes = bytes.fromhex(hex_str)
     
-    if func.hex_to_base64(hex_bytes).decode('utf-8') == result: return True
-    return False
+    return func.hex_to_base64(hex_bytes).decode('utf-8') == result
 
 def test_fixed_xor():
     b_input1 = bytes.fromhex("1c0111001f010100061a024b53535009181c")
     b_input2 = bytes.fromhex("686974207468652062756c6c277320657965")
     result = "746865206b696420646f6e277420706c6179"
 
-    if func.fixed_xor(b_input1, b_input2).hex() == result: return True
-    return False
+    return func.fixed_xor(b_input1, b_input2).hex() == result
 
 def test_single_xor_cipher():
+    result = "Cooking MC's like a pound of bacon"
     input = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
-    msg, key = func.single_xor_cipher(bytes.fromhex(input))
-    score = utility._char_freq(msg.hex())
-    print()
+    msg_key_pair = func.single_xor_cipher(bytes.fromhex(input))
+
+    msg: str = ""
+    key = None
+    maxScore: int = 0
+    for (msg_b, key_b) in msg_key_pair:
+        msg_h = msg_b.decode(errors="ignore")
+        score = utility._char_freq(msg_h)
+        if score > maxScore: 
+            maxScore = score
+            msg = msg_h
+            key = key_b.hex()
+
+    return msg == result and key == '58'
 
 
 if __name__ == '__main__':
     print("test_hex_to_base64:", test_hex_to_base64())
     print("test_fixed_xor:", test_fixed_xor())
     print("test_single_xor_cipher:", test_single_xor_cipher())
+
