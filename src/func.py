@@ -27,3 +27,18 @@ def detect_single_character_xor(input: List[bytes]) -> str:
 
     return utility.char_freq_do(msg_key_pair_all)
 
+def repeating_key_xor(input: bytes, key: bytes) -> bytes:
+    key_len = len(key)
+    key_pos = 0
+
+    ret: bytearray = bytearray()
+    for byte in input:
+        ret.append(byte ^ key[key_pos])
+        if key_pos == key_len-1: 
+            key_pos = 0
+        else:
+            key_pos += 1
+
+    return bytes(ret)
+
+
