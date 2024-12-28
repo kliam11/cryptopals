@@ -18,3 +18,12 @@ def single_xor_cipher(input: bytes) -> List[Tuple[bytes, bytes]]:
         msg_key_pair.append((xored, b_i))
     return msg_key_pair
 
+def detect_single_character_xor(input: List[bytes]) -> str:
+    msg_key_pair_all = []
+    for byte in input:
+        msg_key_pair = single_xor_cipher(byte)
+        msg, key = utility.char_freq_do(msg_key_pair)
+        msg_key_pair_all.append((bytes(msg, 'utf-8'), bytes(key, 'utf-8')))
+
+    return utility.char_freq_do(msg_key_pair_all)
+

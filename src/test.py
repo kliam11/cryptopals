@@ -1,6 +1,7 @@
 import func
 import base64
 import utility
+import os
 
 
 def test_hex_to_base64():
@@ -21,21 +22,28 @@ def test_fixed_xor():
 def test_single_xor_cipher():
     result = "Cooking MC's like a pound of bacon"
     input = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
+
     msg_key_pair = func.single_xor_cipher(bytes.fromhex(input))
-
-    msg: str = ""
-    key = None
-    maxScore: int = 0
-    for (msg_b, key_b) in msg_key_pair:
-        msg_h = msg_b.decode(errors="ignore")
-        score = utility._char_freq(msg_h)
-        if score > maxScore: 
-            maxScore = score
-            msg = msg_h
-            key = key_b.hex()
-
+    msg, key = utility.char_freq_do(msg_key_pair)
+    
     assert (msg == result) and (key == '58')
 
 def test_detect_single_character_xor():
-    assert 1 == 1
+    result = "Now that the party is jumping\n"
+
+    current_dir = os.path.dirname(__file__)
+    file_path = os.path.join(current_dir, '../rsc/4.txt')
+    file_path = os.path.abspath(file_path)
+
+    lines = []
+    with open(file_path, 'r') as file:
+        while True:
+            line = file.readline()
+            if not line: 
+                break
+            lines.append(bytes.fromhex(line))
+    
+    msg, key = func.detect_single_character_xor(lines)
+
+    assert (msg == result) and (key == '3335')
 
