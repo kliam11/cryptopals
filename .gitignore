@@ -28,3 +28,43 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+
+# Compiled object files
+*.o
+*.obj
+
+# Compiled binary files
+*.exe
+*.out
+*.elf
+*.a
+*.so
+*.dll
+*.dylib
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Debug files
+*.dSYM/
+*.stackdump
+
+# Build directories
+/build/
+/bin/
+/dist/
+
+# Editor files
+*~
+*.swp
+*.swo
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Generated
