@@ -28,12 +28,14 @@ char byteToBase64(unsigned char b) {
     }
 }
 
-int occurences(unsigned char* str, size_t len,unsigned char c) {
-    int count = 0;
-    for(size_t i = 0; i < len; i++) {
-        if(tolower(str[i]) == tolower(c)) count++;
+int occurences(unsigned char* str, size_t len) {
+    int score = 0;
+    for(const char* p=EN_FREQ; *p!='\0'; p++) {
+        for(size_t i = 0; i < len; i++) {
+            if(tolower(str[i]) == tolower(*p)) score++;
+        }
     }
-    return count;
+    return score;
 }
 
 void ascii_correct(unsigned char* buf, size_t len) {
@@ -42,4 +44,13 @@ void ascii_correct(unsigned char* buf, size_t len) {
             buf[i] = ' ';
         }
     }
+}
+
+void xorDecrypt(unsigned char* str, size_t strLen, unsigned char* out, size_t outlen, unsigned char key) {
+    for (int i = 0; i < strLen; ++i) {
+        out[i] = str[i] ^ key;
+    }
+    out[outlen] = 0;
+
+    ascii_correct(out, outlen);
 }

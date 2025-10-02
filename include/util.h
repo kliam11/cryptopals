@@ -15,8 +15,8 @@ unsigned char hexCharToByte(char c);
 char byteToBase64(unsigned char b);
 char byteToHexChar(unsigned char b);
 
-int occurences(unsigned char* str, size_t len, unsigned char c);
-
+int occurences(unsigned char* str, size_t len);
 void ascii_correct(unsigned char* buf, size_t len);
+void xorDecrypt(unsigned char* str, size_t strLen, unsigned char* out, size_t outlen, unsigned char key);
 
 #endif

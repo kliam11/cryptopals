@@ -69,7 +69,7 @@ int fixedXOR(unsigned char* str1, size_t str1len,
     return TRUE;
 }
 
-void singleXOR_attack(unsigned char* str, size_t strLen, unsigned char* fndKey) {
+void singleXOR_attack(unsigned char* str, size_t strLen, unsigned char* fndKey, int* scr) {
     int maxScore = 0;
     unsigned char key;
 
@@ -81,10 +81,8 @@ void singleXOR_attack(unsigned char* str, size_t strLen, unsigned char* fndKey) 
         for(int j=0; j<strLen; ++j) {
             xorBuf[j] = str[j] ^ k;
         }
-
-        for(const char* p=EN_FREQ; *p!='\0'; p++) {
-            score += occurences(xorBuf, strLen, (unsigned char)*p);
-        }
+        
+        score += occurences(xorBuf, strLen);
 
         if(score>maxScore) {
             maxScore = score;
@@ -92,5 +90,52 @@ void singleXOR_attack(unsigned char* str, size_t strLen, unsigned char* fndKey) 
         }
     }
 
+    *scr = maxScore;
     *fndKey = key;
+}
+
+void singleXOR_attackFile(char* filebuf, long filebufLen, int* lineNum, unsigned char* fndKey, unsigned char** fndText, int* fndTextLen) {
+    int maxLineScore = 0;
+
+    char* line = strtok((char*)filebuf, "\n");
+    int i = 0;
+    while(line != NULL) {
+        unsigned char* tempBuf;
+        size_t templen;
+
+        // Decode line
+        tempBuf = malloc(strlen(line)/2+1);
+        if(tempBuf==NULL) {
+            perror("malloc err\n");
+            break;
+        }
+        if(!hexDecode(line, strlen(line), tempBuf, &templen)){
+            free(tempBuf);
+            continue;
+        }
+        
+        // Attack each line
+        unsigned char k;
+        int score;
+        singleXOR_attack(tempBuf, templen, &k, &score);
+
+        // Keep reference to line with best post-attack score
+        // Will this work if other lines are just plain English and not gibberish???
+        if(score>maxLineScore) {
+            maxLineScore = score;
+            *lineNum = i;
+            *fndKey = k;
+            *fndText = realloc(*fndText, templen);
+            if(*fndText == NULL) {
+                perror("realloc\n");
+                break;
+            }
+            memcpy(*fndText, tempBuf, templen);
+            *fndTextLen = templen;
+        }
+        
+        line = strtok(NULL, "\n");
+        free(tempBuf);
+        i++;
+    }
 }
