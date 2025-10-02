@@ -42,6 +42,7 @@ Temporary Items
 *.so
 *.dll
 *.dylib
+main
 
 # Precompiled Headers
 *.gch
