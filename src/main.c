@@ -13,7 +13,7 @@ int doBase64Encode(char* hexStr) {
     return TRUE;
 }
 
-int doFixedXOR(char* hexStr1, char* hexStr2) {
+int doXORop(char* hexStr1, char* hexStr2) {
     unsigned char hexArr1[256];
     unsigned char hexArr2[256];
     size_t hexArr1_l, hexArr2_l;
@@ -21,14 +21,16 @@ int doFixedXOR(char* hexStr1, char* hexStr2) {
     hexDecode(hexStr1, strlen(hexStr1), hexArr1, &hexArr1_l);
     hexDecode(hexStr2, strlen(hexStr2), hexArr2, &hexArr2_l);
 
-    unsigned char XORout[256];
-    fixedXOR(hexArr1, hexArr1_l, hexArr2, hexArr2_l, XORout);
+    unsigned char* XORout;
+    size_t XORout_l;
+    int resp = XORop(hexArr1, hexArr1_l, hexArr2, hexArr2_l, &XORout, &XORout_l);
 
     char out[256];
     size_t out_l;
-    hexEncode(XORout, hexArr1_l, out, &out_l);
+    hexEncode(XORout, XORout_l, out, &out_l);
 
     printf("%s\n", out);
+    if(resp) free(XORout);
     return TRUE;
 }
 
@@ -74,11 +76,26 @@ int doSingleXORcipher_file(char* file){
     return TRUE;
 }
 
+int doRepeatXOR(char* str, char* key) {
+    unsigned char* out;
+    size_t outlen;
+    int resp = XORop((unsigned char*)str, strlen(str), (unsigned char*)key, strlen(key), &out, &outlen);
+
+    char hexout[(2*outlen)+1];
+    size_t hexout_l;
+    hexEncode(out, outlen, hexout, &hexout_l);
+
+    printf("%s\n", hexout);
+    if(resp) free(out);
+    return TRUE;
+}
+
 int main(int argc, char **argv)  {
     doBase64Encode("49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d");
-    doFixedXOR("1c0111001f010100061a024b53535009181c", "686974207468652062756c6c277320657965");
+    doXORop("1c0111001f010100061a024b53535009181c", "686974207468652062756c6c277320657965");
     doSingleXORcipher("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736");
     doSingleXORcipher_file("./files/ch4.txt");
+    doRepeatXOR("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal", "ICE");
 
     return 0;
 }

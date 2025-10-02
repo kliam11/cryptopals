@@ -51,21 +51,62 @@ int hexEncode(unsigned char* raw, size_t len, char* out, size_t* out_len) {
     return TRUE;
 }
 
-int fixedXOR(unsigned char* str1, size_t str1len, 
+int XORop(unsigned char* str1, size_t str1len, 
                 unsigned char* str2, size_t str2len, 
-                unsigned char* out) 
+                unsigned char** out, size_t* outlen) 
 {
-    if(str1len != str2len) return FALSE;
+    int maxLen = str1len;
+    int minLen = str2len;
+    unsigned char* maxStr = str1;
+    unsigned char* kstream = str2;
+    unsigned char* kstreamBase = NULL;
 
-    unsigned char* p1 = str1;
-    unsigned char* p2 = str2;
-    unsigned char* o = out;
+    if(str1len != str2len) {
+        unsigned char* minStr = NULL; 
+        if (str1len > str2len) {
+            maxLen = str1len;
+            minLen = str2len;
+            maxStr = str1;
+            minStr = str2;
+        } else {
+            maxLen = str2len;
+            minLen = str1len;
+            maxStr = str2;
+            minStr = str1;
+        }
 
-    while(str1len--) {
-        *o++ = *p1++ ^ *p2++;
+        int kstreamLen = (int)((maxLen+minLen-1)/minLen);
+        kstream = malloc(kstreamLen*minLen);
+        if(kstream == NULL) {
+            perror("malloc\n");
+            return FALSE;
+        }
+        kstreamBase = kstream;
+
+        // Size minStr to at least the length of maxStr
+        int i = 0;
+        while(i < kstreamLen) {
+            for(int j=0; j<minLen; ++j) {
+                kstream[(i*minLen)+j] = minStr[j];
+            }
+            i++;
+        }
     }
-    *o = 0;
 
+    *out = malloc(maxLen+1);
+    if(*out == NULL) {
+        perror("malloc\n");
+        if(kstreamBase != NULL) free(kstream);
+        return FALSE;
+    }
+
+    unsigned char* o = *out;
+    *outlen = maxLen;
+    while(maxLen--) {
+        *o++ = *maxStr++ ^ *kstream++;
+    }
+
+    if(kstreamBase != NULL) free(kstreamBase);
     return TRUE;
 }
 
@@ -125,12 +166,14 @@ void singleXOR_attackFile(char* filebuf, long filebufLen, int* lineNum, unsigned
             maxLineScore = score;
             *lineNum = i;
             *fndKey = k;
-            *fndText = realloc(*fndText, templen);
-            if(*fndText == NULL) {
+            unsigned char* tmp = realloc(*fndText, templen);
+            if(tmp == NULL) {
                 perror("realloc\n");
+                free(tempBuf);
                 break;
             }
-            memcpy(*fndText, tempBuf, templen);
+            memcpy(tmp, tempBuf, templen);
+            *fndText = tmp;
             *fndTextLen = templen;
         }
         
