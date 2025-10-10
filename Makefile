@@ -1,24 +1,35 @@
+CC = gcc
 OBJ = obj
+BIN = bin
 
-all: dir main
+SRC = src/xor.c src/encoding.c
+TEST_SRC = test/test.c
 
-main: $(OBJ)/main.o $(OBJ)/crypt.o $(OBJ)/util.o $(OBJ)/io.o
-	gcc $(OBJ)/main.o $(OBJ)/crypt.o $(OBJ)/util.o $(OBJ)/io.o -o main
+CFLAGS = -Iinclude -I/opt/homebrew/opt/cmocka/include -Wall -g
+LDFLAGS = -L/opt/homebrew/opt/cmocka/lib -lcmocka
 
-$(OBJ)/main.o: src/main.c
-	gcc -Iinclude -c src/main.c -o $(OBJ)/main.o
+all: dir $(BIN)/test
 
-$(OBJ)/crypt.o: src/crypt.c
-	gcc -Iinclude -c src/crypt.c -o $(OBJ)/crypt.o
+$(BIN)/test: $(OBJ)/xor.o $(OBJ)/encoding.o $(OBJ)/buffer.o $(OBJ)/test.o
+	$(CC) $^ -o $@ $(LDFLAGS)
 
-$(OBJ)/util.o: src/util.c
-	gcc -Iinclude -c src/util.c -o $(OBJ)/util.o
+$(OBJ)/test.o: test/test.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJ)/io.o: src/io.c
-	gcc -Iinclude -c src/io.c -o $(OBJ)/io.o
+$(OBJ)/xor.o: src/xor.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ)/encoding.o: src/encoding.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ)/buffer.o: src/buffer.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 dir:
-	mkdir -p $(OBJ)
+	mkdir -p $(OBJ) $(BIN)
+
+test: $(BIN)/test
+	./$(BIN)/test
 
 clean:
-	rm -rf $(OBJ) main
+	rm -rf $(OBJ) $(BIN)

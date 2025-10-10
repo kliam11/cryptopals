@@ -33,6 +33,7 @@ Temporary Items
 # Compiled object files
 *.o
 *.obj
+obj
 
 # Compiled binary files
 *.exe
@@ -67,5 +68,6 @@ main
 
 # Logs
 *.log
+TODO
 
 # Generated
