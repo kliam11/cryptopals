@@ -92,90 +92,11 @@ void test_RepeatKeyXor(void** state) {
     xor_destroy(xor_p);
 }
 
-// Challenge 4
-void test_DetectSingleCharXor(void** state) {
-    char* in = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
-    cipher_type exp = XOR_SINGLE;
-
-    unsigned char hexDec[256] = {0};
-    size_t hexDec_l = 0;
-    if(hexDecode(in, strlen(in), hexDec, &hexDec_l) == CRYPTOP_NOK){
-        fail_msg("Hex Decoding returned NOK");
-    }
-
-    unsigned char* inputs[] = { hexDec };
-    size_t inputs_l[] = { hexDec_l };
-    xor_t xor_p = xor_create(inputs, inputs_l, 1);
-    if(xor_p == NULL) {
-        fail_msg("xor_create returned NULL");
-    }
-
-    cipher_type ciph_t;
-    if(xor_detect_type(xor_p, 0, &ciph_t) != CRYPTOP_OK) {
-        fail_msg("xor_detect_type returned NOK");
-    }
-
-    assert_int_equal(exp, ciph_t);
-    xor_destroy(xor_p);
-}
-/*
-void test_DetectPlainText(void** state) {
-    char* in = "05f12f380720ea2b19e24a07e53c142128354e2827f25a08fb401c3126a6";
-    cipher_type exp = XOR_PLAIN;
-
-    unsigned char hexDec[256] = {0};
-    size_t hexDec_l = 0;
-    if(hexDecode(in, strlen(in), hexDec, &hexDec_l) == CRYPTOP_NOK){
-        fail_msg("Hex Decoding returned NOK");
-    }
-
-    unsigned char* inputs[] = { hexDec };
-    size_t inputs_l[] = { hexDec_l };
-    xor_t xor_p = xor_create(inputs, inputs_l, 1);
-    if(xor_p == NULL) {
-        fail_msg("xor_create returned NULL");
-    }
-
-    cipher_type ciph_t;
-    if(xor_detect_type(xor_p, 0, &ciph_t) != CRYPTOP_OK) {
-        fail_msg("xor_detect_type returned NOK");
-    }
-
-    assert_int_equal(exp, ciph_t);
-    xor_destroy(xor_p);
-}
-
-void test_DecryptSingleCharXor(void** state) {
-    char* in = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
-    char* exp = "Cooking MC's like a pound of bacon";
-
-    unsigned char hexDec[256] = {0};
-    size_t hexDec_l = 0;
-    if(hexDecode(in, strlen(in), hexDec, &hexDec_l) == CRYPTOP_NOK){
-        fail_msg("Hex Decoding returned NOK");
-    }
-
-    unsigned char* inputs[] = { hexDec };
-    size_t inputs_l[] = { hexDec_l };
-    xor_t xor_p = xor_create(inputs, inputs_l, 1);
-    if(xor_p == NULL) {
-        fail_msg("xor_create returned NULL");
-    }
-
-    size_t key_ind;
-    //xor_compute_key_singlechar(xor_p, 0, &key_ind);
-
-    assert_int_equal(exp, ciph_t);
-    xor_destroy(xor_p);
-} */
-
 int main() {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_HexToBase64),
         cmocka_unit_test(test_FixedXor),
         cmocka_unit_test(test_RepeatKeyXor),
-        //cmocka_unit_test(test_DetectSingleCharXor),
-        //cmocka_unit_test(test_DetectPlainText),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
