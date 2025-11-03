@@ -1,8 +1,8 @@
 #include "xor.h"
 
 double _compute_entropy(unsigned char* in, size_t len);
-int _singlexor_probability();
-int _hamming_dist(unsigned char* in1, unsigned char* in2, size_t len);
+double _compute_chisq(unsigned char* in, size_t len);
+int _compute_hamming(unsigned char* in1, unsigned char* in2, size_t len);
 
 struct xor_instance_t {
     buffer_t inputs;
@@ -142,6 +142,9 @@ cryptop_errno xor_detect_type(xor_t xor_p, size_t index, cipher_type* type) {
             *type = XOR_PLAIN;
         } 
         else if(ent < SHAN_THRES_SINGLE) {
+            // do chi-squared test
+                // y? :: XOR_SINGLE
+                // n? :: XOR_PLAIN
             *type = XOR_SINGLE;
         } 
         else {
@@ -169,12 +172,14 @@ double _compute_entropy(unsigned char* in, size_t len) {
         double p = (double)freq[i] / (double)len;
         ent -= p * log2(p);
     }
-
-    printf("%f\n", ent); //TODO
     return ent;
 }
 
-int _hamming_dist(unsigned char* in1, unsigned char* in2, size_t len) {
+double _compute_chisq(unsigned char* in, size_t len) {
+    
+}
+
+int _compute_hamming(unsigned char* in1, unsigned char* in2, size_t len) {
     int d = 0;
     for(int i=0; i<len; ++i) {
         unsigned char c = in1[i] ^ in2[i];
